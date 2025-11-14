@@ -1,0 +1,12 @@
+[Unit]
+Description=Bluetooth Auto Connect ML300
+After=bluetooth.service sound.target
+Requires=bluetooth.service
+
+[Service]
+Type=oneshot
+ExecStart=/home/pi/bin/audiostart
+RemainAfterExit=false
+
+[Install]
+WantedBy=multi-user.target

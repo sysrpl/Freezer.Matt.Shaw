@@ -1,0 +1,1 @@
+ root=PARTUUID=fde49dc7-02 rootfstype=ext4 fsck.repair=yes spidev.bufsiz=65536 rootwait cfg80211.ieee80211_regdom=US console=tty1 quiet vt.global_cursor_default=0 vt.color=0x00 loglevel=3 logo.nologo

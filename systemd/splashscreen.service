@@ -1,0 +1,14 @@
+[Unit]
+Description=Splash screen
+DefaultDependencies=no
+After=local-fs.target
+
+[Service]
+# ExecStart=/usr/bin/fbi --noverbose -a /home/pi/river.png
+ExecStart=/bin/bash -c '/usr/bin/fbi --noverbose -T 1 -a /home/pi/river.png < /dev/tty1 > /dev/tty1 2>&1'
+StandardInput=tty
+StandardOutput=tty
+RemainAfterExit=yes
+
+[Install]
+WantedBy=sysinit.target

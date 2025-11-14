@@ -1,0 +1,19 @@
+[Unit]
+Description=auto tunnel
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=pi
+ExecStart=/home/pi/bin/auto-tunnel start
+ExecStop=/home/pi/bin/auto-tunnel stop
+ExecReload=/home/pi/bin/auto-tunnel restart
+TimeoutStartSec=30
+TimeoutStopSec=30
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

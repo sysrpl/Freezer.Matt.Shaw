@@ -1,0 +1,15 @@
+[Unit]
+Description=Light testing web applciation
+After=network.target
+
+[Service]
+ExecStart=/home/pi/Development/Dotnet/Projects/Lights/lights/run
+WorkingDirectory=/home/pi/Development/Dotnet/Projects/Lights/lights/
+Restart=always
+RestartSec=10
+User=pi
+Environment="XDG_RUNTIME_DIR=/run/user/1000"
+Environment="PULSE_RUNTIME_PATH=/run/user/1000/pulse"
+
+[Install]
+WantedBy=multi-user.target

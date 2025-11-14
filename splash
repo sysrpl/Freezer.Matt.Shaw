@@ -1,0 +1,30 @@
+#!/bin/bash
+
+SPLASH_DIR="/home/pi"
+FB_DEV="/dev/fb0"
+TTY_DEV="/dev/tty1"
+STOP_FILE="/home/pi/stop"
+
+# Wait for framebuffer to be ready
+sleep 0.5
+
+# Hide cursor and clear screen
+echo 0 > /sys/class/graphics/fbcon/cursor_blink 2>/dev/null || true
+setterm -cursor off > "$TTY_DEV" 2>/dev/null || true
+clear > "$TTY_DEV" 2>/dev/null || true
+
+# Loop until /home/pi/stop exists
+i=0
+while [ ! -f "$STOP_FILE" ]; do
+    IMG="$SPLASH_DIR/splash${i}.png"
+    if [ -f "$IMG" ]; then
+        fbi -T 1 -d "$FB_DEV" -noverbose -a "$IMG" < "$TTY_DEV" > /dev/null 2>&1
+    fi
+    sleep 2
+    i=$(( (i + 1) % 5 ))
+done
+
+# Clear screen and show cursor when done
+pkill fbi 2>/dev/null
+clear > "$TTY_DEV" 2>/dev/null || true
+setterm -cursor on > "$TTY_DEV" 2>/dev/null || true
