@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "QUIT" > /run/psplash_fifo
+

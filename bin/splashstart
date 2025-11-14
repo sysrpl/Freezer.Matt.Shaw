@@ -1,0 +1,33 @@
+#!/bin/bash
+
+/home/pi/bin/psplash &
+echo "MSG Booting system" > /run/psplash_fifo
+echo "PROGRESS 10" > /run/psplash_fifo
+sleep 0.5
+echo "MSG Starting pixel services" > /run/psplash_fifo
+echo "PROGRESS 20" > /run/psplash_fifo
+sleep 0.5
+echo "MSG All services loaded" > /run/psplash_fifo
+echo "PROGRESS 30" > /run/psplash_fifo
+sleep 0.5
+echo "MSG Loading user settings" > /run/psplash_fifo
+echo "PROGRESS 40" > /run/psplash_fifo
+sleep 0.5
+echo "MSG Preparing network" > /run/psplash_fifo
+echo "PROGRESS 50" > /run/psplash_fifo
+sleep 0.5
+echo "MSG Opening the display server" > /run/psplash_fifo
+echo "PROGRESS 60" > /run/psplash_fifo
+sleep 0.5
+echo "MSG Waiting for connection ." > /run/psplash_fifo
+echo "PROGRESS 70" > /run/psplash_fifo
+sleep 0.5
+echo "MSG Waiting for connection ..." > /run/psplash_fifo
+echo "PROGRESS 80" > /run/psplash_fifo
+sleep 0.5
+echo "MSG Connection complete" > /run/psplash_fifo
+echo "PROGRESS 100" > /run/psplash_fifo
+
+sleep 2
+
+echo "QUIT" > /run/psplash_fifo

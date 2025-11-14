@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# Configuration
+SPEAKER_MAC="10:B7:F6:0A:79:E3"
+AUDIO_FILE="/home/pi/bin/monitor.mp3"  # Change to your actual audio file path
+CHECK_INTERVAL=5  # Check every 5 seconds
+
+# Colors for output
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Check if mpg123 is installed
+if ! command -v mpg123 > /dev/null 2>&1; then
+    echo -e "${RED}Error: mpg123 is not installed${NC}"
+    echo "Install it with: sudo apt install mpg123"
+    exit 1
+fi
+
+# Check if bluetoothctl is available
+if ! command -v bluetoothctl > /dev/null 2>&1; then
+    echo -e "${RED}Error: bluetoothctl is not installed${NC}"
+    exit 1
+fi
+
+# Check if audio file exists
+if [ ! -f "$AUDIO_FILE" ]; then
+    echo -e "${YELLOW}Warning: Audio file '$AUDIO_FILE' not found${NC}"
+    echo "The script will still work, but won't play the notification sound"
+fi
+
+echo -e "${GREEN}Starting Bluetooth speaker monitor for $SPEAKER_MAC${NC}"
+echo "Press Ctrl+C to stop"
+echo ""
+
+# Track previous connection state
+was_connected=false
+
+# Trap SIGINT (Ctrl+C) for clean exit
+trap 'echo -e "\n${YELLOW}Stopped by user${NC}"; exit 0' SIGINT
+
+while true; do
+    # Check if device is connected
+    is_connected=$(bluetoothctl info "$SPEAKER_MAC" | grep "Connected: yes")
+    
+    if [ -n "$is_connected" ]; then
+        # Device is connected
+        if [ "$was_connected" = false ]; then
+            echo -e "${GREEN}[$(date '+%Y-%m-%d %H:%M:%S')] Speaker connected!${NC}"
+            
+            # Set as default audio sink
+            sleep 2  # Give it a moment to initialize
+            sink_name=$(pactl list short sinks | grep bluez | awk '{print $2}' | head -n 1)
+            if [ -n "$sink_name" ]; then
+                pactl set-default-sink "$sink_name"
+                echo -e "${GREEN}Set as default audio output${NC}"
+            fi
+            
+            # Play notification sound
+            if [ -f "$AUDIO_FILE" ]; then
+                sleep 1  # Brief delay to ensure audio is ready
+                mpg123 "$AUDIO_FILE" 2>/dev/null
+            fi
+            
+            was_connected=true
+        fi
+    else
+        # Device is not connected
+        if [ "$was_connected" = true ]; then
+            echo -e "${RED}[$(date '+%Y-%m-%d %H:%M:%S')] Speaker disconnected${NC}"
+            was_connected=false
+        fi
+        
+        # Try to reconnect
+        echo -e "${YELLOW}[$(date '+%Y-%m-%d %H:%M:%S')] Attempting to reconnect...${NC}"
+        
+        # Ensure Bluetooth is powered on
+        echo "power on" | bluetoothctl > /dev/null 2>&1
+        sleep 1
+        
+        # Attempt connection
+        echo "connect $SPEAKER_MAC" | bluetoothctl > /dev/null 2>&1
+    fi
+    
+    # Wait before next check
+    sleep $CHECK_INTERVAL
+done

@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# Check if mpg123 is installed
+if ! which mpg123 > /dev/null 2>&1; then
+    echo "Error: mpg123 is not installed"
+    echo "Install it with: sudo apt install mpg123"
+    exit 1
+fi
+
+# Check if there are any MP3 files in the current directory
+shopt -s nullglob
+mp3_files=(*.mp3)
+
+if [ ${#mp3_files[@]} -eq 0 ]; then
+    echo "Error: No MP3 files found in the current directory"
+    exit 1
+fi
+
+echo "Found ${#mp3_files[@]} MP3 file(s)"
+echo "Playing random MP3 files... Press Ctrl+C to stop"
+echo ""
+
+# Trap SIGINT (Ctrl+C) for clean exit
+trap 'echo -e "\n\nStopped by user"; exit 0' SIGINT
+
+# Play random MP3 files indefinitely
+while true; do
+    # Get a random index
+    random_index=$((RANDOM % ${#mp3_files[@]}))
+    random_file="${mp3_files[$random_index]}"
+    
+    echo "Now playing: $random_file"
+    
+    # Play the file
+    mpg123 "$random_file"
+    
+    # Optional: Add a small delay between songs
+    # sleep 1
+done

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+MAC="00:02:5B:00:FF:0A"
+while true; do
+  if ! pactl list short sinks | grep -q "bluez"; then
+    bluetoothctl connect "$MAC"
+    echo "connected"
+  fi
+  sleep 20
+done
